@@ -31,7 +31,7 @@ jobs:
     clean: true
     fetchDepth: 1
 
-  - task: Checkout@2
+  - task: Checkout@v2
     displayName: 'Checkout testrepo on test'
     inputs:
       repository: TestRepo
