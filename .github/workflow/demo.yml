@@ -32,8 +32,8 @@ jobs:
     fetchDepth: 1
 
   - script: |
-      all_branch = $(git branch -a)
-      echo "$all_branch"
+      git fetch --prune --tags
+      git branch -r
       git checkout remotes/origin/test
       current_branch=$(git rev-parse --abbrev-ref HEAD)
       echo "Current branch is: $current_branch"
