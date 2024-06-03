@@ -11,7 +11,9 @@ resources:
     type: github
     endpoint: GitHubBranchTagsTest
     name: Eudora-Li01/TestRepo
-    ref: refs/heads/*
+    ref: 
+    -refs/heads/main
+    -refs/heads/test
 
 
 jobs:
