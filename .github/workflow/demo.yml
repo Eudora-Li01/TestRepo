@@ -31,13 +31,13 @@ jobs:
     clean: true
     fetchDepth: 1
 
-  -task: Checkout@2
-   displayName: 'Checkout testrepo on test'
-   inputs:
-     repository: TestRepo
-     clean: true
-     fetchDepth: 1
-     ref: test
+  - task: Checkout@2
+    displayName: 'Checkout testrepo on test'
+    inputs:
+      repository: TestRepo
+      clean: true
+      fetchDepth: 1
+      ref: test
 
   - script: |
       current_branch=$(git rev-parse --abbrev-ref HEAD)
