@@ -26,14 +26,14 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   steps:
-  - script: git checkout test
-    displayName: 'Checkout to test branch'
   - checkout: self
     persistCredentials: true
     clean: true
     fetchDepth: 1
 
   - script: |
+      git branch -l
+      git checkout test
       current_branch=$(git rev-parse --abbrev-ref HEAD)
       echo "Current branch is: $current_branch"
     displayName: 'Switch branch'
