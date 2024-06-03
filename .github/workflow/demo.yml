@@ -29,8 +29,8 @@ jobs:
     echo "Current branch is: $current_branch"
   displayName: 'Switch branch'
 
-  - script: |
-      git checkout v1.0
-      current_tag=$(git describe --tags --abbrev=0)
-      echo "Current tag is: $current_tag"
-    displayName: 'Print current tag'
+- script: |
+    git checkout v1.0
+    current_tag=$(git describe --tags --abbrev=0)
+    echo "Current tag is: $current_tag"
+  displayName: 'Print current tag'
