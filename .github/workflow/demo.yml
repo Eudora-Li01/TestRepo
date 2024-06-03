@@ -31,8 +31,15 @@ jobs:
     clean: true
     fetchDepth: 1
 
+  -task: Checkout@2
+   displayName: 'Checkout MyRepo on main'
+   inputs:
+     repository: git://MyProject/MyRepo
+     clean: true
+     fetchDepth: 1
+     ref: test
+
   - script: |
-      git checkout test 
       current_branch=$(git rev-parse --abbrev-ref HEAD)
       echo "Current branch is: $current_branch"
     displayName: 'Switch branch'
@@ -42,3 +49,4 @@ jobs:
       current_tag=$(git describe --tags --abbrev=0)
       echo "Current tag is: $current_tag"
     displayName: 'Switch tag'
+
