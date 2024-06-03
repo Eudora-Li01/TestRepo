@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
+
 trigger: none
 
 pr: none
@@ -10,27 +13,27 @@ resources:
     name: Eudora-Li01/TestRepo
     ref: refs/heads/main
 
+
 jobs:
-- job: Updatebranchtag
-  displayName: 'Update branch or tag'
+- job: UpdateAndPush
+  displayName: 'Update file and push to other branch'
   pool:
     vmImage: 'ubuntu-latest'
 
   steps:
-- checkout: self
-  persistCredentials: true
-  clean: true
-  fetchDepth: 1
-  ref: refs/heads/main
+  - checkout: self
+    persistCredentials: true
+    clean: true
+    fetchDepth: 1
 
-- script: |
-    git checkout test
-    current_branch=$(git rev-parse --abbrev-ref HEAD)
-    echo "Current branch is: $current_branch"
-  displayName: 'Switch branch'
+  - script: |
+      git checkout test
+      current_branch=$(git rev-parse --abbrev-ref HEAD)
+      echo "Current branch is: $current_branch"
+    displayName: 'Switch branch'
 
-- script: |
-    git checkout v1.0
-    current_tag=$(git describe --tags --abbrev=0)
-    echo "Current tag is: $current_tag"
-  displayName: 'Print current tag'
+  - script: |
+      git checkout v1.0
+      current_tag=$(git describe --tags --abbrev=0)
+      echo "Current tag is: $current_tag"
+    displayName: 'Switch tag'
