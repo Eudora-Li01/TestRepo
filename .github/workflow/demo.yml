@@ -29,6 +29,12 @@ jobs:
   - script: |
       git checkout test
       echo "switch to test branch successfully"
+      echo "Updated content" > .github/test.txt
+      echo "update content successfully"
+      git commit -m "Update file content"
+      echo "commit successfuly"
+      git push origin test
+      echo "push successfully"
     displayName: 'Switch branch and update file'
 
 
