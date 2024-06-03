@@ -3,49 +3,36 @@
 
 trigger: none
 
-parameters:
-  - name: sandbox
-    displayName: 'Select sandbox environment'
-    type: string
-    default: 'red'
-    values:
-      - red
-      - blue
-
 pr: none
 
-stages:
-- ${{ if eq(parameters.sandbox, 'red' ) }}:
-  
-  - stage: DeployDemoRed
-    displayName: 'Deploy to Red Demo environment'
+resources:
+  repositories:
+  - repository: TestRepo 
+    type: github
+    endpoint: GitHubBranchTagsTest
+    name: Eudora-Li01/TestRepo
+    ref: refs/heads/main
 
-    jobs:
 
-     - deployment: DeployRed
-       environment: demo-red
-       timeoutInMinutes: 120
-       pool:
-         vmImage: 'ubuntu-latest'
-       strategy:
-         runOnce:    #rolling, canary are the other strategies that are supported
-           deploy:
-             steps:
-             - template: templates/deploy-template.yml    # Path: pipelines/templates/deploy-template.yml
+jobs:
+- job: UpdateAndPush
+  displayName: 'Update file and push to other branch'
+  pool:
+    vmImage: 'ubuntu-latest'
 
-- ${{ if eq(parameters.sandbox, 'blue' ) }}:
-  - stage: DeployDemoBlue
-    displayName: 'Deploy to Blue Demo environment'
+  steps:
+  - checkout: self
+    persistCredentials: true
+    clean: true
+    fetchDepth: 1
+    ref: refs/heads/main
 
-    jobs:
+  - script: |
+      git checkout test
+      echo "Updated content" > updated_file.txt
+      git add updated_file.txt
+      git commit -m "Update file content"
+      git push origin test
+    displayName: 'Switch branch and update file'
 
-      - deployment: DemoBlue
-        environment: demo-blue
-        timeoutInMinutes: 120
-        pool:
-         vmImage: 'ubuntu-latest'
-        strategy:
-          runOnce:    #rolling, canary are the other strategies that are supported
-            deploy:
-              steps:
-                - template: templates/deploy-template.yml     # Path: pipelines/templates/deploy-template.yml
+
