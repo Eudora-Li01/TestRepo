@@ -1,18 +1,14 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT license.
-
 trigger: none
 
 pr: none
 
 resources:
   repositories:
-  - repository: TestRepo 
+  - repository: GitHubBranchTagsTest 
     type: github
     endpoint: GitHubBranchTagsTest
     name: Eudora-Li01/TestRepo
     ref: refs/heads/main
-
 
 jobs:
 - job: Updatebranchtag
@@ -21,18 +17,16 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   steps:
-  - checkout: git://Eudora-Li01//TestRepo@refs/heads/test
-    persistCredentials: true
+  - checkout: GitHubBranchTagsTest //refs/heads/test
     clean: true
     fetchDepth: 1
 
   - script: |
       current_branch=$(git rev-parse --abbrev-ref HEAD)
       echo "Current branch is: $current_branch"
-   displayName: 'Print current branch'
+    displayName: 'Print current branch'
 
-  - checkout: git://Eudora-Li01//TestRepo@refs/tags/v1.0
-    persistCredentials: true
+  - checkout: GitHubBranchTagsTest //refs/tags/v1.0
     clean: true
     fetchDepth: 1
 
@@ -40,5 +34,3 @@ jobs:
       current_tag=$(git describe --tags --abbrev=0)
       echo "Current tag is: $current_tag"
     displayName: 'Print current tag'
-
-
