@@ -15,28 +15,30 @@ resources:
 
 
 jobs:
-- job: UpdateAndPush
-  displayName: 'Update file and push to other branch'
+- job: Updatebranchtag
+  displayName: 'Update branch or tag'
   pool:
     vmImage: 'ubuntu-latest'
 
   steps:
-  - checkout: self
+  - checkout: git://Eudora-Li01//TestRepo@refs/heads/test
     persistCredentials: true
     clean: true
     fetchDepth: 1
 
   - script: |
-      git checkout test
-      echo "switch to test branch successfully"
-      echo "Updated content" > .github/test.txt
-      echo "update content successfully"
-      git add .github/test.txt
-      echo "add successfully"
-      git commit -m "Update file content"
-      echo "commit successfuly"
-      git push origin test
-      echo "push successfully"
-    displayName: 'Switch branch and update file'
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    echo "Current branch is: $current_branch"
+  displayName: 'Print current branch'
+
+  - checkout: git://Eudora-Li01//TestRepo@refs/tags/v1.0
+    persistCredentials: true
+    clean: true
+    fetchDepth: 1
+
+  - script: |
+    current_tag=$(git describe --tags --abbrev=0)
+    echo "Current tag is: $current_tag"
+      displayName: 'Print current tag'
 
 
