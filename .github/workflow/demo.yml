@@ -11,7 +11,7 @@ resources:
     type: github
     endpoint: GitHubBranchTagsTest
     name: Eudora-Li01/TestRepo
-    ref: refs/heads/main
+    ref: refs/heads/*
 
 
 jobs:
@@ -27,8 +27,7 @@ jobs:
     fetchDepth: 1
 
   - script: |
-      git checkout test
-      git branch -r 
+      git checkout test 
       current_branch=$(git rev-parse --abbrev-ref HEAD)
       echo "Current branch is: $current_branch"
     displayName: 'Switch branch'
