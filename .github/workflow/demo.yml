@@ -28,10 +28,7 @@ jobs:
 
   - script: |
       git checkout test
-      echo "Updated content" > updated_file.txt
-      git add updated_file.txt
-      git commit -m "Update file content"
-      git push origin test
+      echo "switch to test branch successfully"
     displayName: 'Switch branch and update file'
 
 
