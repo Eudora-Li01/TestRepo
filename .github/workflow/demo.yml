@@ -28,6 +28,7 @@ jobs:
 
   - script: |
       git checkout test
+      git branch -r 
       current_branch=$(git rev-parse --abbrev-ref HEAD)
       echo "Current branch is: $current_branch"
     displayName: 'Switch branch'
