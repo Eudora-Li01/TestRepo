@@ -4,7 +4,7 @@ pr: none
 
 resources:
   repositories:
-  - repository: GitHubBranchTagsTest 
+  - repository: TestRepo 
     type: github
     endpoint: GitHubBranchTagsTest
     name: Eudora-Li01/TestRepo
@@ -17,20 +17,20 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   steps:
-  - checkout: GitHubBranchTagsTest //refs/heads/test
-    clean: true
-    fetchDepth: 1
+- checkout: self
+  persistCredentials: true
+  clean: true
+  fetchDepth: 1
+  ref: refs/heads/main
+
+- script: |
+    git checkout test
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    echo "Current branch is: $current_branch"
+  displayName: 'Switch branch'
 
   - script: |
-      current_branch=$(git rev-parse --abbrev-ref HEAD)
-      echo "Current branch is: $current_branch"
-    displayName: 'Print current branch'
-
-  - checkout: GitHubBranchTagsTest //refs/tags/v1.0
-    clean: true
-    fetchDepth: 1
-
-  - script: |
+      git checkout v1.0
       current_tag=$(git describe --tags --abbrev=0)
       echo "Current tag is: $current_tag"
     displayName: 'Print current tag'
