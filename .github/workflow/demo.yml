@@ -30,14 +30,7 @@ jobs:
     persistCredentials: true
     clean: true
     fetchDepth: 1
-
-  - task: Checkout@v2
-    displayName: 'Checkout testrepo on test'
-    inputs:
-      repository: TestRepo
-      clean: true
-      fetchDepth: 1
-      ref: test
+    ref: test
 
   - script: |
       current_branch=$(git rev-parse --abbrev-ref HEAD)
