@@ -13,7 +13,11 @@ resources:
     name: Eudora-Li01/TestRepo
     ref: 
     -refs/heads/main
-    -refs/heads/test
+    branches:
+      include:
+        - main
+        - test
+    
 
 
 jobs:
@@ -35,7 +39,7 @@ jobs:
     displayName: 'Switch branch'
 
   - script: |
-      git checkout v1.0
+      git checkout v2.0
       current_tag=$(git describe --tags --abbrev=0)
       echo "Current tag is: $current_tag"
     displayName: 'Switch tag'
