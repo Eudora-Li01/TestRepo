@@ -32,9 +32,9 @@ jobs:
     fetchDepth: 1
 
   -task: Checkout@2
-   displayName: 'Checkout MyRepo on main'
+   displayName: 'Checkout testrepo on test'
    inputs:
-     repository: git://MyProject/MyRepo
+     repository: TestRepo
      clean: true
      fetchDepth: 1
      ref: test
