@@ -32,7 +32,6 @@ jobs:
     persistCredentials: true
     clean: true
     fetchDepth: 1
-    branch: test
 
   - script: |
       current_branch=$(git rev-parse --abbrev-ref HEAD)
