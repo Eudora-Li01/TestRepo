@@ -32,7 +32,7 @@ jobs:
     fetchDepth: 1
 
   - script: |
-      all_branch = $(git branch)
+      all_branch = $(git branch -a)
       echo "$all_branch"
       git checkout remotes/origin/test
       current_branch=$(git rev-parse --abbrev-ref HEAD)
