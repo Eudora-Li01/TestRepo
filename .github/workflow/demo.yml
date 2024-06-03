@@ -26,6 +26,8 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   steps:
+  - script: git checkout test
+    displayName: 'Checkout to test branch'
   - checkout: self
     persistCredentials: true
     clean: true
