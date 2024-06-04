@@ -5,6 +5,17 @@ trigger: none
 
 pr: none
 
+parameters:
+  - name: TargetBranch
+    displayName: Target branch for ACTS Repo
+    type: string
+    default: main
+  
+  - name: TargetTag
+    displayName: Target tag for ACTS Repo
+    type: string
+    default: v1.0.0
+
 resources:
   repositories:
   - repository: TestRepo 
@@ -16,8 +27,6 @@ resources:
       include:
         - main
         - test
-    
-
 
 jobs:
 - job: UpdateAndPush
@@ -34,14 +43,14 @@ jobs:
   - script: |
       git fetch --prune --tags
       git branch -r
-      git checkout origin/test
+      git checkout $(TargetBranch)
       current_branch=$(git rev-parse --abbrev-ref HEAD)
       echo "Current branch is: $current_branch"
-    displayName: 'Switch branch'
+    displayName: 'Switch to target branch'
 
   - script: |
-      git checkout v2.0
+      git checkout $(TargetTag)
       current_tag=$(git describe --tags --abbrev=0)
       echo "Current tag is: $current_tag"
-    displayName: 'Switch tag'
+    displayName: 'Switch to target tag'
 
