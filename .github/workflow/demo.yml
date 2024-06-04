@@ -9,7 +9,7 @@ parameters:
   - name: TargetBranch
     displayName: Target branch for ACTS Repo
     type: string
-    default: main
+    default: origin/main
   
   - name: TargetTag
     displayName: Target tag for ACTS Repo
@@ -53,4 +53,3 @@ jobs:
       current_tag=$(git describe --tags --abbrev=0)
       echo "Current tag is: $current_tag"
     displayName: 'Switch to target tag'
-
