@@ -1,0 +1,262 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
+
+trigger: none
+
+pr: none
+
+parameters:
+- name: TargetBranch
+  displayName: Target branch for ACTS Repo
+  type: string
+  default: origin/main
+
+- name: TargetTag
+  displayName: Target tag for ACTS Repo
+  type: string
+  default: v1.0.0
+
+variables:
+- template: ../variables/*.yml
+- template: ../variables/consumers/*.yml
+- name: environment
+  value: 'development'
+- name: envFolderPath
+  value: 'dev'
+- name: DeployDataScienceToolkit
+  value: 'True'
+- name: AcceleratorGitHubPath
+  value: ./ACTS-VAT-Tax-Accelerator/DeliveryIP_GitHub
+
+resources:
+repositories:
+- repository: TestRepo 
+  type: github
+  endpoint: GitHubBranchTagsTest
+  name: Eudora-Li01/TestRepo
+  ref: refs/heads/main
+  branches:
+    include:
+      - main
+      - test
+
+jobs:
+- job: create_env_azure_resources
+  displayName: 'Create Environment Azure Resources'
+  pool:
+    vmImage: 'ubuntu-22.04'
+  variables:
+     environmentName: $(environment)
+  steps:
+  - task: Checkout@2
+    displayName: 'Checkout repository'
+    inputs:
+      repository: $(Build.Repository.Name)
+      persistCredentials: true
+      clean: true
+      fetchDepth: 1
+
+  - task: AzurePowerShell@5
+    displayName: 'OIDC Login to Azure Public Cloud with AzPowershell'
+    inputs:
+      azureSubscription: ${{secrets.SUBSCRIPTION_ID}}
+      ScriptType: 'InlineScript'
+      Inline: |
+        Connect-AzAccount -ServicePrincipal -Tenant ${{ secrets.TENANT_ID }} -Credential (New-Object System.Management.Automation.PSCredential ('${{ secrets.SERVICE_PRINCIPAL_CLIENT_ID }}', (ConvertTo-SecureString '${{ secrets.SERVICE_PRINCIPAL_KEY }}' -AsPlainText -Force))) -Subscription ${{ secrets.SUBSCRIPTION_ID }}
+      errorActionPreference: 'stop'
+
+  - task: PowerShell@2
+    displayName: 'Get Main Variables'
+    inputs:
+      targetType: 'inline'
+      script: |
+        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/general_feature_flags/feature_flags_${envFolderPath }}.json" | ConvertFrom-Json -AsHashtable
+        foreach ( $item in $json_data.GetEnumerator() )
+        {
+          if($($item.Value).GetType().Name.ToUpper().Contains("HASHTABLE") -or $($item.Value).GetType().Name.ToUpper().Contains("OBJECT[]")){
+            $value = $($item.Value) | ConvertTo-Json -Compress
+            "$($item.Name)=$value" >> $env:GITHUB_ENV
+          } else {
+            "$($item.Name)=$($item.Value)" >> $env:GITHUB_ENV
+          }
+        }
+        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/general_variables/variables_${{ envFolderPath }}.json" | ConvertFrom-Json -AsHashtable
+        foreach ( $item in $json_data.GetEnumerator() )
+        {
+          if($($item.Value).GetType().Name.ToUpper().Contains("HASHTABLE") -or $($item.Value).GetType().Name.ToUpper().Contains("OBJECT[]")){
+            $value = $($item.Value) | ConvertTo-Json -Compress
+            "$($item.Name)=$value" >> $env:GITHUB_ENV
+          } else {
+           "$($item.Name)=$($item.Value)" >> $env:GITHUB_ENV
+          }
+        }
+        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/networking_setup/variables_${{ envFolderPath }}.json" | ConvertFrom-Json -AsHashtable
+        foreach ( $item in $json_data.GetEnumerator() )
+        {
+          if($($item.Value).GetType().Name.ToUpper().Contains("HASHTABLE") -or $($item.Value).GetType().Name.ToUpper().Contains("OBJECT[]")){
+            $value = $($item.Value) | ConvertTo-Json -Compress
+            "$($item.Name)=$value" >> $env:GITHUB_ENV
+          } else {
+            "$($item.Name)=$($item.Value)" >> $env:GITHUB_ENV
+          }
+        }
+        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/entra_assignments/variables_${{ envFolderPath }}.json" | ConvertFrom-Json -AsHashtable
+        foreach ( $item in $json_data.GetEnumerator() )
+        {
+          if($($item.Value).GetType().Name.ToUpper().Contains("HASHTABLE") -or $($item.Value).GetType().Name.ToUpper().Contains("OBJECT[]")){
+            $value = $($item.Value) | ConvertTo-Json -Compress
+            "$($item.Name)=$value" >> $env:GITHUB_ENV
+          } else {
+            "$($item.Name)=$($item.Value)" >> $env:GITHUB_ENV
+          }
+        }
+
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        $spDetails = az ad sp show --id "${{ secrets.SERVICE_PRINCIPAL_CLIENT_ID }}" | ConvertFrom-Json  
+
+        # Service Principal Name
+        $servicePrincipalName = $spDetails.appDisplayName
+        Write-Output "::add-mask::$servicePrincipalName"
+        "servicePrincipalName=$servicePrincipalName" >> $env:GITHUB_ENV
+
+        # Service Principal AAD Identity ID
+        $servicePrincipalObjectId = $spDetails.id
+        Write-Output "::add-mask::$servicePrincipalObjectId"
+        "servicePrincipalObjectId=$servicePrincipalObjectId" >> $env:GITHUB_ENV
+
+        # Tags with Single Quotes For Bicep Templates
+        $tags_single_quote = '${{ env.tags }}' -replace '"', "'"
+        "tags_single_quote=$tags_single_quote" >> $env:GITHUB_ENV
+
+        if ( '${{ env.Entra_Groups_Data_Publishers }}'.SubString(0,1) -ne "[" ) { 
+          $Entra_Groups_Data_Publishers = '['+ '${{ env.Entra_Groups_Data_Publishers }}' + ']'
+          "Entra_Groups_Data_Publishers=$Entra_Groups_Data_Publishers" >> $env:GITHUB_ENV
+        }
+
+        if ( '${{ env.Entra_Groups_Data_Producers }}'.SubString(0,1) -ne "[" ) { 
+          $Entra_Groups_Data_Producers = '['+ '${{ env.Entra_Groups_Data_Producers }}' + ']'
+          "Entra_Groups_Data_Producers=$Entra_Groups_Data_Producers" >> $env:GITHUB_ENV
+        }
+
+        if ( '${{ env.Entra_Groups_Data_Consumers }}'.SubString(0,1) -ne "[" ) { 
+          $Entra_Groups_Data_Consumers = '['+ '${{ env.Entra_Groups_Data_Consumers }}' + ']'
+          "Entra_Groups_Data_Consumers=$Entra_Groups_Data_Consumers" >> $env:GITHUB_ENV
+        }
+
+        $Entra_Group_Admin_HashTable = '${{ env.Entra_Group_Admin }}' | ConvertFrom-Json
+        $Entra_Group_Admin_ID = $Entra_Group_Admin_HashTable.Group_ID
+        "Entra_Group_Admin_ID=$Entra_Group_Admin_ID" >> $env:GITHUB_ENV
+        $Entra_Group_Admin_Name = $Entra_Group_Admin_HashTable.Group_Name
+        "Entra_Group_Admin_Name=$Entra_Group_Admin_Name" >> $env:GITHUB_ENV
+
+        $Entra_Group_Shared_Service_HashTable = '${{ env.Entra_Group_Shared_Service }}' | ConvertFrom-Json
+        $Entra_Group_Shared_Service_ID = $Entra_Group_Shared_Service_HashTable.Group_ID
+        "Entra_Group_Shared_Service_ID=$Entra_Group_Shared_Service_ID" >> $env:GITHUB_ENV
+        $Entra_Group_Shared_Service_Name = $Entra_Group_Shared_Service_HashTable.Group_Name
+        "Entra_Group_Shared_Service_Name=$Entra_Group_Shared_Service_Name" >> $env:GITHUB_ENV
+
+        $Entra_Group_Governance_HashTable = '${{ env.Entra_Group_Governance }}' | ConvertFrom-Json
+        $Entra_Group_Governance_ID = $Entra_Group_Governance_HashTable.Group_ID
+        "Entra_Group_Governance_ID=$Entra_Group_Governance_ID" >> $env:GITHUB_ENV
+        $Entra_Group_Governance_Name = $Entra_Group_Governance_HashTable.Group_Name
+        "Entra_Group_Governance_Name=$Entra_Group_Governance_Name" >> $env:GITHUB_ENV
+  
+  # Create resource group for envionment resources and get service principal name
+  - task: PowerShell@2
+    displayName: 'Create Main Resource Group'
+    inputs:
+      targetType: 'inline'
+      script: |
+        if ("$(ServicePrincipalHasOwnerRBACAtSubscription)" -eq "True") {
+          $tagsHashTable = '$(tags)' | ConvertFrom-Json -AsHashtable
+          New-AzResourceGroup -Name "$(PrimaryRgName)" -Location "$(azureResourceLocation)" -Tag $tagsHashTable -Force
+        }
+
+  # Create resource group for environment resources
+  - task: PowerShell@2
+    displayName: 'Create VNET, VM Resource Group'
+    inputs:
+      targetType: 'inline'
+      script: |
+        if ("$(DeployWithCustomNetworking)" -eq "True" -and "$(DeployNewVnet)" -eq "True") {
+          $tagsHashTable = '$(tags)' | ConvertFrom-Json -AsHashtable
+          New-AzResourceGroup -Name "$(VnetForResourcesRgName)" -Location "$(azureResourceLocation)" -Tag $tagsHashTable -Force
+          $vnetName = (Get-AzResource -ResourceGroupName "$(VnetForResourcesRgName)" -Name "$(VnetForResourcesName)").Name
+          Write-Host "vnetName=$vnetName"
+          Write-Host "##vso[task.setvariable variable=vnetName]$vnetName"
+        }
+
+  - task: PowerShell@2
+    displayName: 'Create Logic App Resource Group'
+    inputs:
+      targetType: 'inline'
+      script: |
+        if ("$(DeployLogicApp)" -eq "True" -and "$(ServicePrincipalHasOwnerRBACAtSubscription)" -eq "True") {
+          $tagsHashTable = '$(tags)' | ConvertFrom-Json -AsHashtable
+          New-AzResourceGroup -Name "$(LogicAppRgName)" -Location "$(azureResourceLocation)" -Tag $tagsHashTable -Force
+        }
+
+  - task: PowerShell@2
+    displayName: 'Create ML Resource Group'
+    inputs:
+      targetType: 'inline'
+      script: |
+        if ("$(DeployMLWorkspace)" -eq "True" -and "$(ServicePrincipalHasOwnerRBACAtSubscription)" -eq "True") {
+          $tagsHashTable = '$(tags)' | ConvertFrom-Json -AsHashtable
+          New-AzResourceGroup -Name "$(MlRgName)" -Location "$(azureResourceLocation)" -Tag $tagsHashTable -Force
+        }
+
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Deploy VNET'
+      if: ${{ env.DeployNewVnet == 'True' && env.DeployWithCustomNetworking == 'True' }}
+      inputs:
+        deploymentScope: 'Resource Group'
+        resourceGroupName: ${{env.VnetForResourcesRgName}}
+        templateLocation: FilePath
+        csmFile: '$(AcceleratorGitHubPath)/bicep_templates/vnet.bicep'
+        parameters: |
+          vnetName=$(VnetForResourcesName)
+          vnetAddressSpace=$(NewVnetAddressSpace)
+        deploymentMode: 'Incremental'
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Deploy Logic Analytics'
+      if: ${{ env.DeployLogAnalytics == 'True'}}
+      inputs:
+        deploymentScope: 'Resource Group'
+        resourceGroupName: ${{env.PrimaryRgName }}
+        templateLocation: FilePath
+        csmFile: '$(AcceleratorGitHubPath)/bicep_templates/loganalytics.bicep'
+        csmParametersFile: '$(AcceleratorGitHubPath)/bicep_parameters/${{ envFolderPath }}/loganalytics.json'
+        parameters: |
+          location=$(env.azureResourceLocation)
+          logAnalyticsName=$(env.logAnalyticsName)
+          DeployResourcesWithPublicAccess=$(env.DeployResourcesWithPublicAccess)
+        deploymentMode: 'Incremental'
+
+- job: UpdateAndPush
+  displayName: 'Update file and push to other branch'
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+  - checkout: self
+    persistCredentials: true
+    clean: true
+    fetchDepth: 1
+
+  - script: |
+      git fetch --prune --tags
+      git branch -r
+      git checkout ${{ parameters.TargetBranch }}
+      current_branch=$(git rev-parse --abbrev-ref HEAD)
+      echo "Current branch is: $current_branch"
+    displayName: 'Switch to target branch'
+
+  - script: |
+      git checkout ${{ parameters.TargetTag }}
+      current_tag=$(git describe --tags --abbrev=0)
+      echo "Current tag is: $current_tag"
+    displayName: 'Switch to target tag'

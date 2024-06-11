@@ -1,0 +1,26 @@
+variables:
+  DeployDevEnvironment: true
+  DeployResourcesWithPublicAccess: true
+  DeployWithCustomNetworking: false
+  Consumer_Assign_RBAC_On_Deployment: true
+  azureResourceLocation: westus2
+  tags:
+    env: dev
+  AADGroup_Name: acts-group
+  NewResourceGroupName: actstax-consumer-benf-owner
+  DeployNewSynapse: true
+  DeployNewSynapseArtifacts: true
+  NewSynapseWorkspaceName: actstax-synapse-benf-owner
+  DeployNewAzureSQL: true
+  DeployNewAzureSQLArtifacts: true
+  NewAzureSQLServerName: actstaxconsumersqlbenf
+  DeploySynapseWithDataExfiltrationProtection: false
+  DeployNewConsumerMlWorkspace: true
+  NewMlWorkspaceName: actstax-consumer-mldev
+  NewMlKeyVaultName: acttaxconsmrkvnbnf
+  NewMlStorageName: acttaxcnsumersnbnf
+  NewMlAppInsightsName: actstax-consumer-appinbnf
+  NewMlContainerRegistryName: actstaxconsumercrnbnf
+  ConnectToExistingPurview: true
+  ConnectToExistingLogAnalytics: true
+  ConnectToExistingCognitiveService: true
