@@ -27,4 +27,4 @@ variables:
   streamAnalyticsName: acts-tax-streamandev
   databricksWorkspaceName: acts-tax-databriksdv
   tags: 
-    env: dev
+    env: 'dev' 
