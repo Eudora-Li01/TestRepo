@@ -26,5 +26,5 @@ variables:
   eventHubNamespaceName: acts-tax-eventhubdev
   streamAnalyticsName: acts-tax-streamandev
   databricksWorkspaceName: acts-tax-databriksdv
-  #tags: 
-    #env: dev
+  tags: 
+    env: dev
