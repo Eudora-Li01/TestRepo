@@ -51,11 +51,8 @@ jobs:
   displayName: 'Create Environment Azure Resources'
   pool:
     vmImage: 'ubuntu-22.04'
-  variables:
-     environmentName: $(environment)
   steps:
   - checkout: self
-    displayName: 'Checkout repository'
     persistCredentials: true
     clean: true
     fetchDepth: 1
