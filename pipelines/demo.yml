@@ -211,7 +211,7 @@ jobs:
 
   - task: AzureResourceManagerTemplateDeployment@3
     displayName: 'Deploy VNET'
-    if: ${{ eq(env.DeployNewVnet, 'True') && eq(env.DeployWithCustomNetworking, 'True') }}
+    condition: and(eq('$(DeployWithCustomNetworking)', 'True'), eq('$(DeployNewVnet)', 'True'))
     inputs:
       deploymentScope: 'Resource Group'
       resourceGroupName: ${{env.VnetForResourcesRgName}}
@@ -224,7 +224,7 @@ jobs:
       
   - task: AzureResourceManagerTemplateDeployment@3
     displayName: 'Deploy Logic Analytics'
-    if: ${{ eq(env.DeployLogAnalytics, 'True') }}
+    condition: eq(variables['DeployLogAnalytics'], 'True')
     inputs:
       deploymentScope: 'Resource Group'
       resourceGroupName: ${{env.PrimaryRgName }}
