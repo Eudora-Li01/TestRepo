@@ -54,13 +54,18 @@ jobs:
   variables:
      environmentName: $(environment)
   steps:
-  - task: Checkout@2
-    displayName: 'Checkout repository'
-    inputs:
-      repository: $(Build.Repository.Name)
-      persistCredentials: true
-      clean: true
-      fetchDepth: 1
+  - displayName: 'Checkout repository'
+    checkout: self
+    persistCredentials: true
+    clean: true
+    fetchDepth: 1
+  # - task: Checkout@2
+  #   displayName: 'Checkout repository'
+  #   inputs:
+  #     repository: $(Build.Repository.Name)
+  #     persistCredentials: true
+  #     clean: true
+  #     fetchDepth: 1
   - task: AzurePowerShell@5
     displayName: 'OIDC Login to Azure Public Cloud with AzPowershell'
     inputs:
