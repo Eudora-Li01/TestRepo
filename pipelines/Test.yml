@@ -66,7 +66,8 @@ jobs:
   - task: AzurePowerShell@5
     displayName: 'OIDC Login to Azure Public Cloud with AzPowershell'
     inputs:
-      azureSubscription: GitHubBranchTagsTest
+      azureSubscription: $(SUBSCRIPTION_ID)
+      connectedServiceNameARM: $(SUBSCRIPTION_ID)
       ScriptType: 'InlineScript'
       Inline: |
         Connect-AzAccount -ServicePrincipal -Tenant $(TENANT_ID) -Credential (New-Object System.Management.Automation.PSCredential ('$(SERVICE_PRINCIPAL_CLIENT_ID)', (ConvertTo-SecureString '$(SERVICE_PRINCIPAL_KEY)' -AsPlainText -Force))) -Subscription $(SUBSCRIPTION_ID)
