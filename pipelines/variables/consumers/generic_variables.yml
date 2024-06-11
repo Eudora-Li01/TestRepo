@@ -7,10 +7,10 @@ variables:
 
   azureResourceLocation: westus2
 
-  tags:
+  tags: 
     env: dev
 
-  Entra_Group_for_Consumer:
+  Entra_Group_for_Consumer: 
     Group_ID: ""
     Group_Name: ""
 

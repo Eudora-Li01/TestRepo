@@ -4,7 +4,7 @@ variables:
   DeployWithCustomNetworking: false
   Consumer_Assign_RBAC_On_Deployment: true
   azureResourceLocation: westus2
-  tags:
+  tags: 
     env: dev
   AADGroup_Name: acts-group
   NewResourceGroupName: actstax-consumer-benf-owner
