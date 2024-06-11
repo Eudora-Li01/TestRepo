@@ -1,7 +1,7 @@
 variables:
   azureResourceLocation: westus2
   PrimaryRgName: acts-tax-consumer-test
-
+  tags: {env: dev}
   AADGroup_Name: ACTSDev
   synapseWorkspaceName: acts-tax-synapsedev
   dataFactoryName: acts-tax-datafactory-dev
