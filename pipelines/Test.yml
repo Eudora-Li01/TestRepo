@@ -73,4 +73,4 @@ jobs:
       Inline: |
         Connect-AzAccount -ServicePrincipal -Tenant $(TENANT_ID) -Credential (New-Object System.Management.Automation.PSCredential ('$(SERVICE_PRINCIPAL_CLIENT_ID)', (ConvertTo-SecureString '$(SERVICE_PRINCIPAL_KEY)' -AsPlainText -Force))) -Subscription $(SUBSCRIPTION_ID)
       errorActionPreference: 'stop'
-    azurePowerShellVersion: 'LatestVersion'
+      azurePowerShellVersion: 'LatestVersion'
