@@ -65,10 +65,10 @@ jobs:
   - task: AzurePowerShell@5
     displayName: 'OIDC Login to Azure Public Cloud with AzPowershell'
     inputs:
-      azureSubscription: ${{secrets.SUBSCRIPTION_ID}}
+      azureSubscription: $(SUBSCRIPTION_ID)
       ScriptType: 'InlineScript'
       Inline: |
-        Connect-AzAccount -ServicePrincipal -Tenant ${{ secrets.TENANT_ID }} -Credential (New-Object System.Management.Automation.PSCredential ('${{ secrets.SERVICE_PRINCIPAL_CLIENT_ID }}', (ConvertTo-SecureString '${{ secrets.SERVICE_PRINCIPAL_KEY }}' -AsPlainText -Force))) -Subscription ${{ secrets.SUBSCRIPTION_ID }}
+        Connect-AzAccount -ServicePrincipal -Tenant ${{ TENANT_ID }} -Credential (New-Object System.Management.Automation.PSCredential ('${{ SERVICE_PRINCIPAL_CLIENT_ID }}', (ConvertTo-SecureString '${{ SERVICE_PRINCIPAL_KEY }}' -AsPlainText -Force))) -Subscription ${{ SUBSCRIPTION_ID }}
       errorActionPreference: 'stop'
 
   - task: PowerShell@2
@@ -76,7 +76,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/general_feature_flags/feature_flags_${envFolderPath }}.json" | ConvertFrom-Json -AsHashtable
+        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/general_feature_flags/feature_flags_${{envFolderPath }}.json" | ConvertFrom-Json -AsHashtable
         foreach ( $item in $json_data.GetEnumerator() )
         {
           if($($item.Value).GetType().Name.ToUpper().Contains("HASHTABLE") -or $($item.Value).GetType().Name.ToUpper().Contains("OBJECT[]")){
@@ -86,7 +86,7 @@ jobs:
             "$($item.Name)=$($item.Value)" >> $env:GITHUB_ENV
           }
         }
-        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/general_variables/variables_${{ envFolderPath }}.json" | ConvertFrom-Json -AsHashtable
+        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/general_variables/variables_$ (envFolderPath).json" | ConvertFrom-Json -AsHashtable
         foreach ( $item in $json_data.GetEnumerator() )
         {
           if($($item.Value).GetType().Name.ToUpper().Contains("HASHTABLE") -or $($item.Value).GetType().Name.ToUpper().Contains("OBJECT[]")){
@@ -96,7 +96,7 @@ jobs:
            "$($item.Name)=$($item.Value)" >> $env:GITHUB_ENV
           }
         }
-        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/networking_setup/variables_${{ envFolderPath }}.json" | ConvertFrom-Json -AsHashtable
+        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/networking_setup/variables_$ (envFolderPath).json" | ConvertFrom-Json -AsHashtable
         foreach ( $item in $json_data.GetEnumerator() )
         {
           if($($item.Value).GetType().Name.ToUpper().Contains("HASHTABLE") -or $($item.Value).GetType().Name.ToUpper().Contains("OBJECT[]")){
@@ -106,7 +106,7 @@ jobs:
             "$($item.Name)=$($item.Value)" >> $env:GITHUB_ENV
           }
         }
-        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/entra_assignments/variables_${{ envFolderPath }}.json" | ConvertFrom-Json -AsHashtable
+        $json_data = Get-Content "$(AcceleratorGitHubPath)/variables/entra_assignments/variables_$ (envFolderPath).json" | ConvertFrom-Json -AsHashtable
         foreach ( $item in $json_data.GetEnumerator() )
         {
           if($($item.Value).GetType().Name.ToUpper().Contains("HASHTABLE") -or $($item.Value).GetType().Name.ToUpper().Contains("OBJECT[]")){
@@ -121,7 +121,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $spDetails = az ad sp show --id "${{ secrets.SERVICE_PRINCIPAL_CLIENT_ID }}" | ConvertFrom-Json  
+        $spDetails = az ad sp show --id "${{ SERVICE_PRINCIPAL_CLIENT_ID }}" | ConvertFrom-Json  
 
         # Service Principal Name
         $servicePrincipalName = $spDetails.appDisplayName
@@ -220,7 +220,7 @@ jobs:
     condition: and(eq('$(DeployWithCustomNetworking)', 'True'), eq('$(DeployNewVnet)', 'True'))
     inputs:
       deploymentScope: 'Resource Group'
-      resourceGroupName: ${{env.VnetForResourcesRgName}}
+      resourceGroupName: ${{VnetForResourcesRgName}}
       templateLocation: FilePath
       csmFile: '$(AcceleratorGitHubPath)/bicep_templates/vnet.bicep'
       parameters: |
@@ -233,10 +233,10 @@ jobs:
     condition: eq(variables['DeployLogAnalytics'], 'True')
     inputs:
       deploymentScope: 'Resource Group'
-      resourceGroupName: ${{env.PrimaryRgName }}
+      resourceGroupName: ${{PrimaryRgName }}
       templateLocation: FilePath
       csmFile: '$(AcceleratorGitHubPath)/bicep_templates/loganalytics.bicep'
-      csmParametersFile: '$(AcceleratorGitHubPath)/bicep_parameters/${{ envFolderPath }}/loganalytics.json'
+      csmParametersFile: '$(AcceleratorGitHubPath)/bicep_parameters/$(envFolderPath)/loganalytics.json'
       parameters: |
         location=$(env.azureResourceLocation)
         logAnalyticsName=$(env.logAnalyticsName)
