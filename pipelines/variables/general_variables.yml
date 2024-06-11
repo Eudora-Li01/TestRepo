@@ -1,0 +1,30 @@
+variables:
+ azureResourceLocation: westus2
+  PrimaryRgName: acts-tax-consumer
+  tags:
+    env: dev
+  AADGroup_Name: acts_-group
+  synapseWorkspaceName: acts-tax-synapsedev
+  dataFactoryName: acts-tax-datafactory-dev
+  azureSQLServerName: acttaxsqldev
+  azureSQLServerDBName: MetadataControl
+  keyVaultName: acttaxkeyvaultdev
+  dataLakeName: actaxdlconsmrdatadv
+  landingStorageName: acttaxlandstordev
+  LogicAppRgName: acts-tax-logic-dev
+  logicAppName: acts-tax-logicapp-dev
+  logicAppServicePlanName: acts-tax-logicappservplan-dev
+  logicAppStorageName: acttaxlogicappsdev
+  logicAppInsightsName: acts-tax-appins-dev
+  purviewName: acts-tax-purview-dev
+  logAnalyticsName: acts-tax-logan-dev
+  MlRgName: acts-tax-ml-dev
+  mlWorkspaceName: act-tax-work-dev
+  mlWorkspaceKeyVaultName: actaxmlkeyvdev
+  mlStorageName: acttaxmlstrgedev
+  mlAppInsightsName: acts-tax-appin-dev
+  mlContainerRegistryName: actstaxmlcregdev
+  cognitiveServiceName: act-taxcognitidev
+  eventHubNamespaceName: acts-tax-eventhubdev
+  streamAnalyticsName: acts-tax-streamandev
+  databricksWorkspaceName: acts-tax-databriksdv
