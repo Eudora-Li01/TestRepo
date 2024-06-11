@@ -18,13 +18,13 @@ parameters:
 
 variables:
   - template: ./variables/general_variables.yml
-  - template: ./variables/general_feature_flags.yml
-  - template: ./variables/entra_assignments.yml
-  - template: ./variables/data_science_toolkit.yml
-  - template: ./variables/networking_setup.yml
-  - template: ./variables/consumers/acts_variables.yml
-  - template: ./variables/consumers/beneficial_ownership_variables.yml
-  - template: ./variables/consumers/generic_variables.yml
+  #- template: ./variables/general_feature_flags.yml
+  #- template: ./variables/entra_assignments.yml
+  #- template: ./variables/data_science_toolkit.yml
+  #- template: ./variables/networking_setup.yml
+  #- template: ./variables/consumers/acts_variables.yml
+  #- template: ./variables/consumers/beneficial_ownership_variables.yml
+  #- template: ./variables/consumers/generic_variables.yml
   - name: environment
     value: 'development'
   - name: envFolderPath

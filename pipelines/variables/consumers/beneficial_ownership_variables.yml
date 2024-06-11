@@ -4,7 +4,6 @@ variables:
   DeployWithCustomNetworking: false
   Consumer_Assign_RBAC_On_Deployment: true
   azureResourceLocation: westus2
-  tags: {env: dev}
   AADGroup_Name: acts-group
   NewResourceGroupName: actstax-consumer-benf-owner
   DeployNewSynapse: true
@@ -23,3 +22,5 @@ variables:
   ConnectToExistingPurview: true
   ConnectToExistingLogAnalytics: true
   ConnectToExistingCognitiveService: true
+  tags: 
+    env: dev
