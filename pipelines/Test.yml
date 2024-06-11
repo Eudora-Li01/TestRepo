@@ -33,6 +33,8 @@ variables:
     value: 'True'
   - name: AcceleratorGitHubPath
     value: ./ACTS-VAT-Tax-Accelerator/DeliveryIP_GitHub
+  - name: Tags
+    - env: dev
 
 resources:
   repositories:
