@@ -17,8 +17,8 @@ parameters:
   default: v1.0.0
 
 variables:
-  - template: ./pipelines/variables/*.yml
-  - template: ./pipelines/variables/consumers/*.yml
+  - template: ./variables/*.yml
+  - template: ./variables/consumers/*.yml
   - name: environment
     value: 'development'
   - name: envFolderPath
