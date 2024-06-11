@@ -6,39 +6,39 @@ trigger: none
 pr: none
 
 parameters:
-- name: TargetBranch
-  displayName: Target branch for ACTS Repo
-  type: string
-  default: origin/main
+  - name: TargetBranch
+    displayName: Target branch for ACTS Repo
+    type: string
+    default: origin/main
 
-- name: TargetTag
-  displayName: Target tag for ACTS Repo
-  type: string
-  default: v1.0.0
+  - name: TargetTag
+    displayName: Target tag for ACTS Repo
+    type: string
+    default: v1.0.0
 
 variables:
-- template: ../variables/*.yml
-- template: ../variables/consumers/*.yml
-- name: environment
-  value: 'development'
-- name: envFolderPath
-  value: 'dev'
-- name: DeployDataScienceToolkit
-  value: 'True'
-- name: AcceleratorGitHubPath
-  value: ./ACTS-VAT-Tax-Accelerator/DeliveryIP_GitHub
+  - template: ../variables/*.yml
+  - template: ../variables/consumers/*.yml
+  - name: environment
+    value: 'development'
+  - name: envFolderPath
+    value: 'dev'
+  - name: DeployDataScienceToolkit
+    value: 'True'
+  - name: AcceleratorGitHubPath
+    value: ./ACTS-VAT-Tax-Accelerator/DeliveryIP_GitHub
 
 resources:
-repositories:
-- repository: TestRepo 
-  type: github
-  endpoint: GitHubBranchTagsTest
-  name: Eudora-Li01/TestRepo
-  ref: refs/heads/main
-  branches:
-    include:
-      - main
-      - test
+  repositories:
+  - repository: TestRepo 
+    type: github
+    endpoint: GitHubBranchTagsTest
+    name: Eudora-Li01/TestRepo
+    ref: refs/heads/main
+    branches:
+      include:
+        - main
+        - test
 
 jobs:
 - job: create_env_azure_resources
@@ -211,7 +211,7 @@ jobs:
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Deploy VNET'
-      if: ${{ env.DeployNewVnet == 'True' && env.DeployWithCustomNetworking == 'True' }}
+      if: ${{ eq(env.DeployNewVnet, 'True') && eq(env.DeployWithCustomNetworking, 'True') }}
       inputs:
         deploymentScope: 'Resource Group'
         resourceGroupName: ${{env.VnetForResourcesRgName}}
@@ -223,7 +223,7 @@ jobs:
         deploymentMode: 'Incremental'
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Deploy Logic Analytics'
-      if: ${{ env.DeployLogAnalytics == 'True'}}
+      if: ${{ eq(env.DeployLogAnalytics, 'True') }}
       inputs:
         deploymentScope: 'Resource Group'
         resourceGroupName: ${{env.PrimaryRgName }}
