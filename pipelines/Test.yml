@@ -54,8 +54,8 @@ jobs:
   variables:
      environmentName: $(environment)
   steps:
-  - displayName: 'Checkout repository'
-    checkout: self
+  - checkout: self
+    displayName: 'Checkout repository'
     persistCredentials: true
     clean: true
     fetchDepth: 1
